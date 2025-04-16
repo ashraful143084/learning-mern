@@ -1,4 +1,5 @@
 const { StatusCodes, ReasonPhrases } = require("http-status-codes");
+const { createTaskProvider } = require("../providers/task.provider");
 
 const handleGetTasks = (req, res) => {
   let response = [
@@ -25,8 +26,9 @@ const handleGetTasks = (req, res) => {
   res.status(StatusCodes.OK).json(response);
 };
 
-const handlePostTasks = (req, res) => {
-  res.send("This is post task controller");
+const handlePostTasks = async (req, res) => {
+  const task = await createTaskProvider(req, res);
+  res.status(StatusCodes.CREATED).json(task);
 };
 
 const handlePatchTasks = (req, res) => {

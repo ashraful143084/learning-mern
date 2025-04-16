@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const { StatusCodes } = require("http-status-codes");
 const tasksRouter = require("./routes/tasks.router");
 const responseFormatter = require("./middleware/responseFormatter.middleware.js");
@@ -46,6 +47,22 @@ app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND).json(null);
 });
 
-app.listen(port, () => {
-  console.log(`App is running on port: ${port}`);
-});
+async function bootstrap() {
+  try {
+    await mongoose.connect(
+      "mongodb+srv://ashraful:ET4usICzRQXyQzie@mernjs.0qcjeme.mongodb.net/",
+      {
+        dbName: "fullstacktasks",
+      }
+    );
+    console.log("Connected to MongoDB");
+    app.listen(port, () => {
+      console.log(`App is running on port: ${port}`);
+    });
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+}
+
+bootstrap();
