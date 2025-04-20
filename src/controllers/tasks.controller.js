@@ -3,6 +3,7 @@ const {
   createTaskProvider,
   getTaskProvider,
   updateTaskProvider,
+  deleteTaskProvider,
 } = require("../providers/task.provider");
 
 const handleGetTasks = async (req, res) => {
@@ -21,8 +22,10 @@ const handlePatchTasks = async (req, res) => {
   res.status(StatusCodes.OK).json(updatedTask);
 };
 
-const handleDeleteTasks = (req, res) => {
-  res.send("This is delete task controller");
+const handleDeleteTasks = async (req, res) => {
+  const deletedTask = await deleteTaskProvider(req, res);
+
+  res.status(StatusCodes.OK).json(deletedTask);
 };
 
 module.exports = {

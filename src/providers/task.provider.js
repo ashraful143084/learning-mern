@@ -29,4 +29,14 @@ const updateTaskProvider = async (req, res) => {
   return await task.save();
 };
 
-module.exports = { createTaskProvider, getTaskProvider, updateTaskProvider };
+const deleteTaskProvider = async (req, res) => {
+  const task = await Task.deleteOne({ _id: req.body["_id"] });
+  return task;
+};
+
+module.exports = {
+  createTaskProvider,
+  getTaskProvider,
+  updateTaskProvider,
+  deleteTaskProvider,
+};
