@@ -12,8 +12,7 @@ const handleGetTasks = async (req, res) => {
 };
 
 const handlePostTasks = async (req, res) => {
-  const task = await createTaskProvider(req, res);
-  res.status(StatusCodes.CREATED).json(task);
+  return await createTaskProvider(req, res);
 };
 
 const handlePatchTasks = async (req, res) => {

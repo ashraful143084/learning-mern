@@ -49,12 +49,9 @@ app.use((req, res) => {
 
 async function bootstrap() {
   try {
-    await mongoose.connect(
-      "mongodb+srv://ashraful:ET4usICzRQXyQzie@mernjs.0qcjeme.mongodb.net/",
-      {
-        dbName: "fullstacktasks",
-      }
-    );
+    await mongoose.connect("mongodb://localhost:27017/", {
+      dbName: "fullstacktasks",
+    });
     console.log("Connected to MongoDB");
     app.listen(port, () => {
       console.log(`App is running on port: ${port}`);

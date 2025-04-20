@@ -1,14 +1,22 @@
+const { matchedData } = require("express-validator");
 const Task = require("../schema/task.schema");
+const { StatusCodes } = require("http-status-codes");
 
 const createTaskProvider = async (req, res) => {
-  const task = new Task({
-    title: req.body.title,
-    description: req.body.description,
-    status: req.body.status,
-    priority: req.body.priority,
-    dueDate: req.body.dueDate,
-  });
+  const validatedResult = matchedData(req);
+  const task = new Task(validatedResult);
 
+  try {
+    await task.save();
+    return res.status(StatusCodes.CREATED).json(task);
+  } catch (error) {
+    return res
+      .status(StatusCodes.GATEWAY_TIMEOUT)
+      .json({
+        reason:
+          "Unablde to process your request at this moment, please try again later",
+      });
+  }
   return await task.save();
 };
 
