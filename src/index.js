@@ -9,6 +9,7 @@ const tasksRouter = require("./routes/tasks.router");
 const responseFormatter = require("./middleware/responseFormatter.middleware.js");
 const authRouter = require("./routes/auth.router.js");
 const userRouter = require("./routes/users.router.js");
+const expressWinstonLogger = require("./middleware/expressWinston.provider.js");
 const app = express();
 const port = 3001;
 app.use(express.json());
@@ -30,6 +31,7 @@ let accessLogStream = fs.createWriteStream(
 
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(responseFormatter);
+app.use(expressWinstonLogger);
 
 const middleware = function (req, res, next) {
   req.info = { appname: "Tasks Manager", author: "Ashraful Islam" };
@@ -49,9 +51,12 @@ app.use((req, res) => {
 
 async function bootstrap() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/", {
-      dbName: "fullstacktasks",
-    });
+    await mongoose.connect(
+      "mongodb+srv://ashraful:ET4usICzRQXyQzie@mernjs.0qcjeme.mongodb.net/",
+      {
+        dbName: "fullstacktasks",
+      }
+    );
     console.log("Connected to MongoDB");
     app.listen(port, () => {
       console.log(`App is running on port: ${port}`);

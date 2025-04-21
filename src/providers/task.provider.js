@@ -1,6 +1,7 @@
 const { matchedData } = require("express-validator");
 const Task = require("../schema/task.schema");
 const { StatusCodes } = require("http-status-codes");
+const errorLogger = require("../helpers/errorLogger.helper");
 
 const createTaskProvider = async (req, res) => {
   const validatedResult = matchedData(req);
@@ -10,14 +11,12 @@ const createTaskProvider = async (req, res) => {
     await task.save();
     return res.status(StatusCodes.CREATED).json(task);
   } catch (error) {
-    return res
-      .status(StatusCodes.GATEWAY_TIMEOUT)
-      .json({
-        reason:
-          "Unablde to process your request at this moment, please try again later",
-      });
+    errorLogger(`Error creating a new task: ${error.message}`, req, error);
+    return res.status(StatusCodes.GATEWAY_TIMEOUT).json({
+      reason:
+        "Unablde to process your request at this moment, please try again later",
+    });
   }
-  return await task.save();
 };
 
 const getTaskProvider = async (req, res) => {
