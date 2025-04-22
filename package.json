@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js"
+    "dev": "cross-env NODE_ENV=development nodemon src/index.js",
+    "staging": "cross-env NODE_ENV=staging nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production nodemon src/index.js"
   },
   "author": "Ashraful Islam",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "express-winston": "^4.2.0",

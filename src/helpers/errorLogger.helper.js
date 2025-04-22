@@ -1,7 +1,7 @@
 const logger = require("./winston.helper");
 
 const errorLogger = (message, req, error) => {
-  logger.error(`${message}`, {
+  logger.error(`Error creating a new task: ${error.message}`, {
     meta: {
       errorCode: error.code,
       errorName: error.name,
@@ -14,3 +14,5 @@ const errorLogger = (message, req, error) => {
     },
   });
 };
+
+module.exports = errorLogger;

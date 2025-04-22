@@ -7,8 +7,7 @@ const {
 } = require("../providers/task.provider");
 
 const handleGetTasks = async (req, res) => {
-  const tasks = await getTaskProvider(req, res);
-  res.status(StatusCodes.OK).json(tasks);
+  return await getTaskProvider(req, res);
 };
 
 const handlePostTasks = async (req, res) => {
@@ -22,9 +21,7 @@ const handlePatchTasks = async (req, res) => {
 };
 
 const handleDeleteTasks = async (req, res) => {
-  const deletedTask = await deleteTaskProvider(req, res);
-
-  res.status(StatusCodes.OK).json(deletedTask);
+  return await deleteTaskProvider(req, res);
 };
 
 module.exports = {

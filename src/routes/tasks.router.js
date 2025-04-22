@@ -1,21 +1,49 @@
 const express = require("express");
 const tasksRouter = express.Router();
-const { body, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const tasksController = require("../controllers/tasks.controller.js");
 const { StatusCodes } = require("http-status-codes");
-const { createTaskValidator } = require("../validators/task.validator.js");
+const {
+  createTaskValidator,
+  getTaskValidator,
+  updateTaskValidator,
+  deleteTaskValidator,
+} = require("../validators/task.validator.js");
 
-tasksRouter.get("/tasks", tasksController.handleGetTasks);
+tasksRouter.get("/tasks", getTaskValidator, (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    return tasksController.handleGetTasks(req, res);
+  } else {
+    res.status(StatusCodes.BAD_REQUEST).json(result.array());
+  }
+});
+
 tasksRouter.post("/tasks", createTaskValidator, (req, res) => {
   const result = validationResult(req);
-  console.log(result);
   if (result.isEmpty()) {
     return tasksController.handlePostTasks(req, res);
   } else {
     res.status(StatusCodes.BAD_REQUEST).json(result.array());
   }
 });
-tasksRouter.patch("/tasks", tasksController.handlePatchTasks);
-tasksRouter.delete("/tasks", tasksController.handleDeleteTasks);
+
+tasksRouter.patch("/tasks", updateTaskValidator, (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    return tasksController.handlePatchTasks(req, res);
+  } else {
+    res.status(StatusCodes.BAD_REQUEST).json(result.array());
+  }
+});
+
+tasksRouter.delete("/tasks", deleteTaskValidator, (req, res) => {
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    return tasksController.handleDeleteTasks(req, res);
+  } else {
+    return res.status(StatusCodes.BAD_REQUEST).json(result.array());
+  }
+});
 
 module.exports = tasksRouter;

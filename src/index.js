@@ -1,62 +1,23 @@
 const express = require("express");
-const morgan = require("morgan");
-const path = require("path");
-const fs = require("fs");
-const cors = require("cors");
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const { StatusCodes } = require("http-status-codes");
-const tasksRouter = require("./routes/tasks.router");
-const responseFormatter = require("./middleware/responseFormatter.middleware.js");
-const authRouter = require("./routes/auth.router.js");
-const userRouter = require("./routes/users.router.js");
-const expressWinstonLogger = require("./middleware/expressWinston.provider.js");
+const configureApp = require("./settings/config.js");
 const app = express();
-const port = 3001;
+
+process.env.NODE_ENV = process.env.NODE_ENV || "development";
+const envFile = `.env.${process.env.NODE_ENV}`;
+dotenv.config({ path: envFile });
+
+const port = parseInt(process.env.PORT);
 app.use(express.json());
 
-// const corsOptions = {
-//   origin: ["example.com", "example2.com"],
-// };
-
-app.use(cors());
-
-//create a write stream in append mode
-
-let accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "..", "access.log"),
-  {
-    flags: "a",
-  }
-);
-
-app.use(morgan("combined", { stream: accessLogStream }));
-app.use(responseFormatter);
-app.use(expressWinstonLogger);
-
-const middleware = function (req, res, next) {
-  req.info = { appname: "Tasks Manager", author: "Ashraful Islam" };
-  next();
-};
-
-app.use(middleware);
-
-// define routes
-app.use("/", tasksRouter);
-app.use("/", authRouter);
-app.use("/", userRouter);
-
-app.use((req, res) => {
-  res.status(StatusCodes.NOT_FOUND).json(null);
-});
+configureApp(app);
 
 async function bootstrap() {
   try {
-    await mongoose.connect(
-      "mongodb+srv://ashraful:ET4usICzRQXyQzie@mernjs.0qcjeme.mongodb.net/",
-      {
-        dbName: "fullstacktasks",
-      }
-    );
+    await mongoose.connect(process.env.DATABASE_URL, {
+      dbName: process.env.DATABASE_NAME,
+    });
     console.log("Connected to MongoDB");
     app.listen(port, () => {
       console.log(`App is running on port: ${port}`);

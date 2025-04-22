@@ -6,7 +6,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, "First name is required"],
       trim: true,
-      maxLength: [100, "First name must be 100 characters"],
+      maxLength: [100, "First name must be less than 100 characters"],
     },
     lastName: {
       type: String,
@@ -39,7 +39,7 @@ const userSchema = new Schema(
           );
         },
         message:
-          "password must be included at least one number , one uppercase letter, one lowercase letter and one special characters, ",
+          "password must be included at least one number , one uppercase letter, one lowercase letter and one special characters",
       },
     },
   },
