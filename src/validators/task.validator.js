@@ -25,11 +25,26 @@ const createTaskValidator = [
 ];
 
 const getTaskValidator = [
-  query("limit", "Limit must be a valid int").optional().isInt().toInt(),
-  query("page", "Page must be a valid int").optional().isInt().toInt(),
+  query("limit", "Limit must be a valid int")
+    .optional()
+    .isInt()
+    .toInt({ min: 1 }),
+  query("limit").customSanitizer((value, { req }) => {
+    return value ? value : 5;
+  }),
+  query("page", "Page must be a valid int")
+    .optional()
+    .isInt()
+    .toInt({ min: 1 }),
+  query("page").customSanitizer((value, { req }) => {
+    return value ? value : 1;
+  }),
   query("order", "Order must be one of ['asc','dsc']")
     .optional()
     .isIn(["asc", "dsc"]),
+  query("order").customSanitizer((value, { req }) => {
+    return value ? value : "asc";
+  }),
 ];
 
 const updateTaskValidator = [

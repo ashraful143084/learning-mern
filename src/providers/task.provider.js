@@ -26,12 +26,43 @@ const getTaskProvider = async (req, res) => {
     const totalTask = await Task.countDocuments();
     const limit = query.limit;
     const currentPage = query.page;
-    const totalPage = Math.ceil(totalTask / limit);
+    const order = query.order;
+    const totalPages = Math.ceil(totalTask / limit);
+    const nextPage = currentPage === totalPages ? currentPage : currentPage + 1;
+    const previousPage = currentPage === 1 ? currentPage : currentPage - 1;
 
-    console.log(totalTask, limit, currentPage, totalPage);
+    const baseURL = `${req.protocol}://${req.get("host")}${
+      req.originalUrl.split("?")[0]
+    }`;
 
-    const tasks = await Task.find();
-    return res.status(StatusCodes.OK).json(tasks);
+    const tasks = await Task.find({
+      status: { $in: ["todo", "inProgress"] },
+    })
+      .limit(limit)
+      .skip(currentPage - 1)
+      .sort({
+        createdAt: order === "asc" ? 1 : -1,
+      });
+
+    let finalResponse = {
+      data: tasks,
+      pagination: {
+        meta: {
+          itemsPerPage: limit,
+          totalItems: totalTask,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        },
+        links: {
+          first: `${baseURL}/?limit=${limit}&page=${1}&order=${order}`,
+          last: `${baseURL}/?limit=${limit}&page=${totalPages}&order=${order}`,
+          current: `${baseURL}/?limit=${limit}&page=${currentPage}&order=${order}`,
+          next: `${baseURL}/?limit=${limit}&page=${nextPage}&order=${order}`,
+          previous: `${baseURL}/?limit=${limit}&page=${previousPage}&order=${order}`,
+        },
+      },
+    };
+    return res.status(StatusCodes.OK).json(finalResponse);
   } catch (error) {
     errorLogger(`Error while fetching data`, req, error);
     return res.status(StatusCodes.GATEWAY_TIMEOUT).json({
