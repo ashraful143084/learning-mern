@@ -29,7 +29,7 @@ const createUserValidator = [
     .custom(async (email) => {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        throw new Error("Email already in use");
+        throw new Error("A user with this email already exists");
       }
       return true;
     }),

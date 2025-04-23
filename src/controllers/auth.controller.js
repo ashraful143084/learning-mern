@@ -1,5 +1,7 @@
-const handleLogin = (req, res) => {
-  res.send("Login");
+const { loginProvider } = require("../providers/auth.provider");
+
+const handleLogin = async (req, res) => {
+  return await loginProvider(req, res);
 };
 
 module.exports = { handleLogin };
