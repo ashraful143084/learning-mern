@@ -21,7 +21,7 @@ tasksRouter.get("/tasks", [getTaskValidator, authenticateToken], (req, res) => {
 });
 
 tasksRouter.post(
-  "/tasks",
+  "/tasks/create",
   [createTaskValidator, authenticateToken],
   (req, res) => {
     const result = validationResult(req);
