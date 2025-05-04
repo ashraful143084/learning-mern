@@ -9,7 +9,7 @@ const userRouter = express.Router();
 // userRouter.get("/users", handleGetUser);
 userRouter.post("/users/create", createUserValidator, (req, res) => {
   const result = validationResult(req);
-
+  console.log(result);
   if (result.isEmpty()) {
     return handleCreateUser(req, res);
   } else {

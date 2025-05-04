@@ -7,7 +7,6 @@ const generateTokenProvider = require("./generateToken.provider");
 
 const loginProvider = async (req, res) => {
   const validatedData = matchedData(req);
-
   try {
     const user = await getUserByEmail(validatedData.email);
 
