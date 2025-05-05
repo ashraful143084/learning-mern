@@ -29,23 +29,23 @@ async function bootstrap() {
       .collection("users")
       .updateMany({ secondaryEmail: "" }, { $unset: { secondaryEmail: "" } });
 
-    console.log("🔍 Getting indexes...");
+    // console.log("🔍 Getting indexes...");
     const indexes = await db.collection("users").indexes();
     const secondaryEmailIndex = indexes.find((idx) =>
       idx.key.hasOwnProperty("secondaryEmail")
     );
 
     if (secondaryEmailIndex) {
-      console.log("🧹 Dropping old secondaryEmail index...");
+      // console.log("🧹 Dropping old secondaryEmail index...");
       await db.collection("users").dropIndex(secondaryEmailIndex.name);
     }
 
-    console.log("✅ Creating new sparse unique index on secondaryEmail...");
+    // console.log("✅ Creating new sparse unique index on secondaryEmail...");
     await db
       .collection("users")
       .createIndex({ secondaryEmail: 1 }, { unique: true, sparse: true });
 
-    console.log("🎉 Index successfully fixed!");
+    // console.log("🎉 Index successfully fixed!");
 
     console.log("Connected to MongoDB");
     app.listen(port, () => {

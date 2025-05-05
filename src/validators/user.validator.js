@@ -195,10 +195,7 @@ const createUserValidator = [
     .trim()
     .optional(),
 
-  body("unavailableDate", "UnavailableDate needs to be a valid ISO8601 string")
-    .isString()
-    .isISO8601()
-    .optional(),
+  body("unavailableDate").optional(),
 
   body("speciality", "Speciality needs to be string")
     .isString()

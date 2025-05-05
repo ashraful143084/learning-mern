@@ -159,7 +159,7 @@ const userSchema = new Schema(
       required: false,
     },
     externalId: {
-      type: Date,
+      type: String,
       required: false,
     },
     acceptPolicy: {
