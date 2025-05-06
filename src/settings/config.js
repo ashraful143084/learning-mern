@@ -8,6 +8,7 @@ const responseFormatter = require("../middleware/responseFormatter.middleware.js
 const authRouter = require("../routes/auth.router.js");
 const userRouter = require("../routes/users.router.js");
 const expressWinstonLogger = require("../middleware/expressWinston.provider.js");
+const authorRouter = require("../routes/author.router.js");
 
 const configureApp = (app) => {
   app.use(cors());
@@ -38,6 +39,7 @@ const configureApp = (app) => {
   app.use("/", tasksRouter);
   app.use("/", authRouter);
   app.use("/", userRouter);
+  app.use("/", authorRouter);
 
   app.use((req, res) => {
     res.status(StatusCodes.NOT_FOUND).json(null);
