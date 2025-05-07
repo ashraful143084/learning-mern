@@ -1,23 +1,24 @@
 const express = require("express");
-const { createAuthorValidator } = require("../validators/author.validator");
 const { validationResult } = require("express-validator");
-const { handleCreateAuthor } = require("../controllers/author.controller");
 const { StatusCodes } = require("http-status-codes");
+const { createReviewerValidator } = require("../validators/reviewerValidator");
+const { handleCreateReviewer } = require("../controllers/reviewer.controller");
 const authenticateToken = require("../middleware/authenticateToken.middleware");
 
-const authorRouter = express.Router();
+const reviewerRouter = express.Router();
 
-authorRouter.post(
-  "/author/create",
-  [createAuthorValidator, authenticateToken],
+reviewerRouter.post(
+  "/reviewer/create",
+  [createReviewerValidator, authenticateToken],
   (req, res) => {
     const result = validationResult(req);
+
     if (result.isEmpty()) {
-      return handleCreateAuthor(req, res);
+      return handleCreateReviewer(req, res);
     } else {
       res.status(StatusCodes.BAD_REQUEST).json(result.array());
     }
   }
 );
 
-module.exports = authorRouter;
+module.exports = reviewerRouter;

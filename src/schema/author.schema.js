@@ -33,11 +33,12 @@ const authorSchema = new Schema(
       type: String,
       required: false,
     },
-    email: {
+    authorEmail: {
       type: String,
       required: [true, "Primary Email is required"],
       trim: true,
       unique: true,
+      sparse: true,
       validate: {
         validator: function (email) {
           return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/gm.test(
@@ -48,7 +49,7 @@ const authorSchema = new Schema(
       },
     },
     institutionNumber: {
-      type: Number,
+      type: String,
       required: false,
       trim: true,
     },
@@ -101,6 +102,11 @@ const authorSchema = new Schema(
     primaryAddressPhone: {
       type: String,
       required: false,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true, versionKey: false }

@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const User = require("../schema/user.schema");
+const Author = require("../schema/author.schema");
 
 const createAuthorValidator = [
   body("prefix", "Prefix is required").notEmpty().isString().trim(),
@@ -35,15 +35,22 @@ const createAuthorValidator = [
     .trim()
     .optional(),
 
-  body("email", "Primary Email is required and must be a valid email")
+  body("authorEmail", "Primary Email is required and must be a valid email")
     .notEmpty()
+    .optional({ checkFalsy: true })
     .trim()
     .toLowerCase()
     .isEmail()
-    .isLength({ max: 200 }),
-
+    .isLength({ max: 200 })
+    .custom(async (authorEmail) => {
+      const existingAuthor = await Author.findOne({ authorEmail });
+      if (existingAuthor) {
+        throw new Error("A author with this secondary email already exists");
+      }
+      return true;
+    }),
   body("institutionNumber", "Institution number needs to be number")
-    .isNumeric()
+    .isString()
     .trim()
     .optional(),
 
