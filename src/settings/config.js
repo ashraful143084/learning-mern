@@ -10,6 +10,7 @@ const userRouter = require("../routes/users.router.js");
 const expressWinstonLogger = require("../middleware/expressWinston.provider.js");
 const authorRouter = require("../routes/author.router.js");
 const reviewerRouter = require("../routes/reviewer.router.js");
+const funderRouter = require("../routes/funder.router.js");
 
 const configureApp = (app) => {
   app.use(cors());
@@ -42,6 +43,7 @@ const configureApp = (app) => {
   app.use("/", userRouter);
   app.use("/", authorRouter);
   app.use("/", reviewerRouter);
+  app.use("/", funderRouter);
 
   app.use((req, res) => {
     res.status(StatusCodes.NOT_FOUND).json(null);
