@@ -26,6 +26,8 @@ const createAuthorValidator = [
     max: 100,
   }),
 
+  body("image").optional(),
+
   body("contributionRole", "Please check Contribution Role")
     .isString()
     .trim()

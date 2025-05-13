@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { FileSchema } = require("./file.schema ");
 
 const authorSchema = new Schema(
   {
@@ -25,6 +26,7 @@ const authorSchema = new Schema(
       trim: true,
       maxLength: [50, "Last name must be 50 characters"],
     },
+    image: [FileSchema],
     contributionRole: {
       type: String,
       required: false,

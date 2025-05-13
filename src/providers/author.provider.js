@@ -21,6 +21,7 @@ const createAuthorProvider = async (req, res) => {
       firstName: validatedData.firstName,
       middleName: validatedData.middleName,
       lastName: validatedData.lastName,
+      image: validatedData.image,
       authorEmail: validatedData.authorEmail,
 
       contributionRole: validatedData.contributionRole,
@@ -50,6 +51,7 @@ const createAuthorProvider = async (req, res) => {
       firstName: author.firstName,
       middleName: author.middleName,
       lastName: author.lastName,
+      image: author.image,
       authorEmail: author.authorEmail,
 
       contributionRole: author.contributionRole,
