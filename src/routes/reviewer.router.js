@@ -8,7 +8,7 @@ const authenticateToken = require("../middleware/authenticateToken.middleware");
 const reviewerRouter = express.Router();
 
 reviewerRouter.post(
-  "/reviewer/create",
+  "/api/reviewer/create",
   [createReviewerValidator, authenticateToken],
   (req, res) => {
     const result = validationResult(req);

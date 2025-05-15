@@ -7,7 +7,7 @@ const { validationResult } = require("express-validator");
 const funderRouter = express.Router();
 
 funderRouter.post(
-  "/funder/create",
+  "/api/funder/create",
   [createFunderValidator, authenticateToken],
   (req, res) => {
     const result = validationResult(req);

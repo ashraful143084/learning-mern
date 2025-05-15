@@ -7,7 +7,7 @@ const { StatusCodes } = require("http-status-codes");
 const userRouter = express.Router();
 
 // userRouter.get("/users", handleGetUser);
-userRouter.post("/users/create", createUserValidator, (req, res) => {
+userRouter.post("/api/users/create", createUserValidator, (req, res) => {
   const result = validationResult(req);
   if (result.isEmpty()) {
     return handleCreateUser(req, res);

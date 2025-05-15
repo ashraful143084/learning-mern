@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 const { StatusCodes } = require("http-status-codes");
 const authRouter = express.Router();
 
-authRouter.post("/auth/login", loginValidator, (req, res) => {
+authRouter.post("/api/auth/login", loginValidator, (req, res) => {
   const result = validationResult(req);
 
   if (result.isEmpty()) {

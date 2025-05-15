@@ -29,7 +29,7 @@ const upload = multer({
 }).single("image");
 
 authorRouter.post(
-  "/author/create",
+  "/api/author/create",
   [createAuthorValidator, authenticateToken],
   upload,
   (req, res) => {
