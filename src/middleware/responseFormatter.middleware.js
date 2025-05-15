@@ -12,14 +12,14 @@ const responseFormatter = (req, res, next) => {
     };
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      response.data = data.pagination ? data.data : data;
+      response.data = data && data.pagination ? data.data : data;
     }
 
     if (res.statusCode > 300) {
       response.error = data;
     }
 
-    if (data.pagination) {
+    if (data && data.pagination) {
       response.pagination = data.pagination;
     }
 
