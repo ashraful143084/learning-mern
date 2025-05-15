@@ -27,7 +27,6 @@ configureApp(app);
 
 // Bootstrap function
 async function bootstrap() {
-  console.log(process.env.DATABASE_URL);
   try {
     console.log("🚀 Connecting to MongoDB...");
     await mongoose.connect(process.env.DATABASE_URL, {
