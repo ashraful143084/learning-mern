@@ -23,6 +23,9 @@ if (!process.env.DATABASE_URL || !process.env.DATABASE_NAME) {
 
 // Middleware
 app.use(express.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 configureApp(app);
 
 // Bootstrap function

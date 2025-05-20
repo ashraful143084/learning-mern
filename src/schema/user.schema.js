@@ -170,6 +170,12 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    attachment: {
+      path: String,
+      originalName: String,
+      mimetype: String,
+      size: Number,
+    },
   },
   { timestamps: true, versionKey: false }
 );

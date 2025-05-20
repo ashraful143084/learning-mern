@@ -57,6 +57,15 @@ const createUserProvider = async (req, res) => {
       password: hashedPassword,
     });
 
+    if (req.file) {
+      user.attachment = {
+        path: req.file.path,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+      };
+    }
+
     await user.save();
 
     return res.status(StatusCodes.OK).json({
@@ -94,6 +103,12 @@ const createUserProvider = async (req, res) => {
       speciality: user.speciality,
       externalId: user.externalId,
       acceptPolicy: user.acceptPolicy,
+      profilePic: req.file
+        ? `${req.protocol}://${req.get("host")}/${req.file.path.replace(
+            /\\/g,
+            "/"
+          )}`
+        : null,
     });
   } catch (error) {
     errorLogger(`Error creating a new user: ${error.message}`, req, error);

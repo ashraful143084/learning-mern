@@ -4,36 +4,42 @@ const taskSchema = new Schema(
   {
     title: {
       type: String,
-      required: [true, "Task title is required"],
+      required: [false, "Task title is required"],
       trim: true,
       maxLength: [100, "Title cannot be more than 100 characters"],
     },
     description: {
       type: String,
-      required: [true, "Task description is required"],
+      required: [false, "Task description is required"],
       trim: true,
       maxLength: [500, "Description cannot be more than 500 characters"],
     },
     status: {
       type: String,
-      required: [true, "Task status is required"],
+      required: [false, "Task status is required"],
       enum: ["todo", "inProgress", "completed"],
       default: "todo",
     },
     priority: {
       type: String,
-      required: [true, "Task priority is required"],
+      required: [false, "Task priority is required"],
       enum: ["low", "normal", "high"],
       default: "normal",
     },
     dueDate: {
       type: Date,
-      required: [true, "Task due date is required"],
+      required: [false, "Task due date is required"],
     },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+    },
+    attachment: {
+      path: String,
+      originalName: String,
+      mimetype: String,
+      size: Number,
     },
   },
   { timestamps: true, versionKey: false }

@@ -4,10 +4,24 @@ const { StatusCodes } = require("http-status-codes");
 const errorLogger = require("../helpers/errorLogger.helper");
 
 const createTaskProvider = async (req, res) => {
-  const validatedResult = matchedData(req);
-  const task = new Task({ ...validatedResult, user: req.user.sub });
-
   try {
+    const validatedResult = matchedData(req);
+    const taskData = {
+      ...validatedResult,
+      user: req.user.sub,
+    };
+
+    // Add file path if file was uploaded
+    if (req.file) {
+      taskData.attachment = {
+        path: req.file.path,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+      };
+    }
+
+    const task = new Task(taskData);
     await task.save();
     return res.status(StatusCodes.CREATED).json(task);
   } catch (error) {

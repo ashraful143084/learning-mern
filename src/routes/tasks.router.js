@@ -11,26 +11,34 @@ const {
 } = require("../validators/task.validator.js");
 const authenticateToken = require("../middleware/authenticateToken.middleware.js");
 
-tasksRouter.get(
-  "/api/tasks",
-  [getTaskValidator, authenticateToken],
+const { makeUpload } = require("../middleware/upload.js");
+
+const uploadTaskFile = makeUpload(
+  (req) => `user-${req.user.sub}/tasks`, // subDir generator
+  { maxSize: 10 } // 10 MB limit (optional)
+);
+
+tasksRouter.post(
+  "/api/tasks/create",
+  [authenticateToken, uploadTaskFile.single("taskFile"), createTaskValidator],
   (req, res) => {
     const result = validationResult(req);
     if (result.isEmpty()) {
-      return tasksController.handleGetTasks(req, res);
+      return tasksController.handlePostTasks(req, res);
     } else {
       res.status(StatusCodes.BAD_REQUEST).json(result.array());
     }
   }
 );
 
-tasksRouter.post(
-  "/api/tasks/create",
-  [createTaskValidator, authenticateToken],
+tasksRouter.get(
+  "/api/tasks",
+  [getTaskValidator, authenticateToken],
   (req, res) => {
     const result = validationResult(req);
+
     if (result.isEmpty()) {
-      return tasksController.handlePostTasks(req, res);
+      return tasksController.handleGetTasks(req, res);
     } else {
       res.status(StatusCodes.BAD_REQUEST).json(result.array());
     }
