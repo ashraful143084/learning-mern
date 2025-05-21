@@ -34,6 +34,16 @@ const journalSchema = new Schema(
       required: [true, "Title is required"],
       trim: true,
     },
+    slug: {
+      type: String,
+      required: [true, "Title is required"],
+      trim: true,
+    },
+    volume: {
+      type: String,
+      required: [true, "Volume is required"],
+      trim: true,
+    },
     coverPhoto: coverPhotoSchema, // single embedded document
     journalProfile: {
       type: String,

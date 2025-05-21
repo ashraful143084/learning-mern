@@ -2,6 +2,8 @@ const { body } = require("express-validator");
 
 const createJournalValidator = [
   body("title").trim().notEmpty().withMessage("Title is required"),
+  body("slug").trim().notEmpty().withMessage("Title is required"),
+  body("volume").trim().notEmpty().withMessage("Volume is required"),
 
   body("journalProfile")
     .trim()

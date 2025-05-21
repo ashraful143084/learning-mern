@@ -22,6 +22,7 @@ const makeUpload = (getSubDir, options = {}) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       const subDir = getSubDir(req);
+      console.log(subDir);
       const uploadPath = path.join("uploads", subDir);
       fs.mkdirSync(uploadPath, { recursive: true });
       cb(null, uploadPath);

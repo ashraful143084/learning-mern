@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const configureApp = require("./settings/config.js");
 const { fixSparseUniqueIndex } = require("./settings/fixSparseUniqueIndex.js");
 
+const path = require("path");
+
 const app = express();
 
 // Load env vars
@@ -23,8 +25,9 @@ if (!process.env.DATABASE_URL || !process.env.DATABASE_NAME) {
 
 // Middleware
 app.use(express.json());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const uploadsPath = path.resolve(__dirname, "../uploads");
+app.use("/uploads", express.static(uploadsPath));
 
 configureApp(app);
 

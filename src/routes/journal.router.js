@@ -2,8 +2,13 @@ const express = require("express");
 const { createJournalValidator } = require("../validators/journal.validator");
 const { validationResult } = require("express-validator");
 const { StatusCodes } = require("http-status-codes");
-const { handlePostJournal } = require("../controllers/journal.controller");
+
+const {
+  handlePostJournal,
+  handleGetJournals,
+} = require("../controllers/journal.controller");
 const { makeUpload } = require("../middleware/upload");
+const queryParamValidator = require("../validators/queryParam.validator");
 
 const journalRouter = express.Router();
 
@@ -17,7 +22,6 @@ journalRouter.post(
   [uploadTaskFile.single("coverPhoto"), createJournalValidator],
   (req, res) => {
     const result = validationResult(req);
-
     if (result.isEmpty()) {
       return handlePostJournal(req, res);
     } else {
@@ -25,5 +29,15 @@ journalRouter.post(
     }
   }
 );
+
+journalRouter.get("/api/journals", [queryParamValidator], (req, res) => {
+  const result = validationResult(req);
+
+  if (result.isEmpty()) {
+    return handleGetJournals(req, res);
+  } else {
+    res.status(StatusCodes.BAD_REQUEST).json(result.array());
+  }
+});
 
 module.exports = journalRouter;
