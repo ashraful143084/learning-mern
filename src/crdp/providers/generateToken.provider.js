@@ -4,6 +4,9 @@ const generateTokenProvider = (user) => {
   const payload = {
     sub: user["_id"],
     email: user.email,
+    name: `${user.firstName} ${user.lastName}`,
+    firstName: user.firstName,
+    lastName: user.lastName,
     iat: Math.floor(Date.now() / 1000),
     exp:
       Math.floor(Date.now() / 1000) +

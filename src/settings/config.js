@@ -3,15 +3,15 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const { StatusCodes } = require("http-status-codes");
-const tasksRouter = require("../routes/tasks.router");
-const responseFormatter = require("../middleware/responseFormatter.middleware.js");
-const authRouter = require("../routes/auth.router.js");
-const userRouter = require("../routes/users.router.js");
-const expressWinstonLogger = require("../middleware/expressWinston.provider.js");
-const authorRouter = require("../routes/author.router.js");
-const reviewerRouter = require("../routes/reviewer.router.js");
-const funderRouter = require("../routes/funder.router.js");
-const journalRouter = require("../routes/journal.router.js");
+const tasksRouter = require("../crdp/routes/tasks.router.js");
+const responseFormatter = require("../crdp/middleware/responseFormatter.middleware.js");
+const authRouter = require("../crdp/routes/auth.router.js");
+const userRouter = require("../crdp/routes/users.router.js");
+const expressWinstonLogger = require("../crdp/middleware/expressWinston.provider.js");
+const authorRouter = require("../crdp/routes/author.router.js");
+const reviewerRouter = require("../crdp/routes/reviewer.router.js");
+const funderRouter = require("../crdp/routes/funder.router.js");
+const journalRouter = require("../crdp/routes/journal.router.js");
 
 const configureApp = (app) => {
   app.use(cors());
