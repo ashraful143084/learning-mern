@@ -47,4 +47,16 @@ const createAuthorProvider = async (req, res) => {
   }
 };
 
-module.exports = { createAuthorProvider };
+const fetchAuthorProvider = async (req, res) => {
+  try {
+    const authors = await Author.find({ user: req.user.sub }); // Filter by authenticated user
+    return res.status(StatusCodes.OK).json(authors);
+  } catch (error) {
+    errorLogger(`Error fetching authors: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to fetch authors",
+    });
+  }
+};
+
+module.exports = { createAuthorProvider, fetchAuthorProvider };
