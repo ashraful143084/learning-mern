@@ -2,122 +2,123 @@ const { body } = require("express-validator");
 const Author = require("../schema/author.schema");
 
 const createAuthorValidator = [
-  body("prefix", "Prefix is required").notEmpty().isString().trim(),
-
-  body("firstName", "First name must be less than 100 characters").isLength({
-    max: 100,
-  }),
-
-  body("middleName", "Middle Name is required and needs to be string")
-    .optional()
-    .isString()
-    .trim(),
-
-  body("middleName", "Middle name must be less than 100 characters").isLength({
-    max: 100,
-  }),
-
-  body("lastName", "Last Name is required and needs to be string")
-    .optional()
-    .isString()
-    .trim(),
-
-  body("lastName", "Last name must be less than 100 characters").isLength({
-    max: 100,
-  }),
-
-  body("image").optional(),
-
-  body("contributionRole", "Please check Contribution Role")
-    .isString()
-    .trim()
-    .optional(),
-  body("degreeOfContribution", "Please check Degree of Contribution Role")
-    .isString()
-    .trim()
-    .optional(),
-
-  body("authorEmail", "Primary Email is required and must be a valid email")
+  // Prefix
+  body("prefix")
     .notEmpty()
-    .optional({ checkFalsy: true })
-    .trim()
-    .toLowerCase()
+    .withMessage("Prefix is required")
+    .isString()
+    .withMessage("Prefix must be a string")
+    .trim(),
+
+  // First Name
+  body("firstName")
+    .notEmpty()
+    .withMessage("First name is required")
+    .isLength({ max: 100 })
+    .withMessage("First name must be less than 100 characters")
+    .isString()
+    .withMessage("First name must be a string")
+    .trim(),
+
+  // Last Name
+  body("lastName")
+    .notEmpty()
+    .withMessage("Last name is required")
+    .isLength({ max: 100 })
+    .withMessage("Last name must be less than 100 characters")
+    .isString()
+    .withMessage("Last name must be a string")
+    .trim(),
+
+  // Email
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
     .isEmail()
+    .withMessage("Must be a valid email")
     .isLength({ max: 200 })
-    .custom(async (authorEmail) => {
-      const existingAuthor = await Author.findOne({ authorEmail });
+    .withMessage("Email must be under 200 characters")
+    .trim()
+    .custom(async (email) => {
+      const existingAuthor = await Author.findOne({ email });
       if (existingAuthor) {
-        throw new Error("A author with this secondary email already exists");
+        throw new Error("An author with this email already exists");
       }
       return true;
     }),
-  body("institutionNumber", "Institution number needs to be number")
-    .isString()
-    .trim()
-    .optional(),
 
-  body("institution", "Institution needs to be string")
+  //google scholars
+  body("googleScholars")
+    .notEmpty()
+    .withMessage("Google Scholars name is required")
     .isString()
-    .trim()
-    .optional(),
+    .trim(),
 
-  body("institutionTitle", "Institution Title needs to be string")
-    .isString()
-    .trim()
-    .optional(),
-  body("institutionDepartment", "Institution Department needs to be string")
-    .isString()
-    .trim()
-    .optional(),
+  // Contributions: ensure valid JSON & structure
+  body("authorContribution")
+    .notEmpty()
+    .withMessage("Author contribution is required")
+    .custom((value) => {
+      let parsed;
+      try {
+        parsed = typeof value === "string" ? JSON.parse(value) : value;
+      } catch {
+        throw new Error("Invalid authorContribution JSON format");
+      }
 
-  body("primaryAddress", "Primary address is required needs to be string")
-    .isString()
-    .trim()
-    .notEmpty(),
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error("At least one Author Contribution is required");
+      }
 
-  body("secondaryAddress", "Secondary Address needs to be string")
-    .isString()
-    .trim()
-    .optional(),
+      for (const item of parsed) {
+        if (
+          !item.contributionRule ||
+          typeof item.contributionRule !== "string"
+        ) {
+          throw new Error(
+            "Each contribution must have a valid contributionRule"
+          );
+        }
+        if (
+          !item.degreeOfContribution ||
+          typeof item.degreeOfContribution !== "string"
+        ) {
+          throw new Error(
+            "Each contribution must have a valid degreeOfContribution"
+          );
+        }
+      }
 
-  body(
-    "primaryAddressCountry",
-    "Primary Address Country is required and needs to be string"
-  )
-    .isString()
-    .trim()
-    .notEmpty(),
+      return true;
+    }),
 
-  body("primaryAddressSuite", "Primary Address Suite needs to be string")
+  // Institution & Address Info
+  body("institution")
+    .notEmpty()
+    .withMessage("Institution is required")
     .isString()
-    .trim()
-    .optional(),
-
-  body("primaryAddressState", "Primary Address State needs to be string")
+    .trim(),
+  body("department")
+    .notEmpty()
+    .withMessage("Department is required")
     .isString()
-    .trim()
-    .optional(),
-
-  body(
-    "primaryAddressCity",
-    "Primary Address City is required and needs to be string"
-  )
+    .trim(),
+  body("country")
+    .notEmpty()
+    .withMessage("Country is required")
     .isString()
-    .trim()
-    .notEmpty(),
-
-  body(
-    "primaryAddressPostalCode",
-    "Primary Address Postal Code is required and needs to be string"
-  )
+    .trim(),
+  body("city").notEmpty().withMessage("City is required").isString().trim(),
+  body("zipCode")
+    .notEmpty()
+    .withMessage("Zip Code is required")
     .isString()
-    .trim()
-    .notEmpty(),
-
-  body("primaryAddressPhone", "Primary Address Phone needs to be string")
+    .trim(),
+  body("phoneNumber")
+    .notEmpty()
+    .withMessage("Phone Number is required")
     .isString()
-    .trim()
-    .optional(),
+    .trim(),
 ];
 
 module.exports = { createAuthorValidator };

@@ -1,6 +1,23 @@
 const { Schema, model } = require("mongoose");
-const { FileSchema } = require("./file.schema ");
 
+// Define sub-schema for author contributions
+const authorContributionSchema = new Schema(
+  {
+    contributionRule: {
+      type: String,
+      trim: true,
+      required: [true, "Contribution rule is required"],
+    },
+    degreeOfContribution: {
+      type: String,
+      trim: true,
+      required: [true, "Degree of contribution is required"],
+    },
+  },
+  { _id: false } // We don't need _id for sub-docs here
+);
+
+// Define main Author schema
 const authorSchema = new Schema(
   {
     prefix: {
@@ -8,52 +25,46 @@ const authorSchema = new Schema(
       required: [true, "Prefix is required"],
       trim: true,
     },
+
     firstName: {
       type: String,
       required: [true, "First name is required"],
       trim: true,
-      maxLength: [50, "First name must be 50 characters"],
+      maxlength: [50, "First name must be less than 50 characters"],
     },
-    middleName: {
-      type: String,
-      required: false,
-      trim: true,
-      maxLength: [50, "Middle name must be 50 characters"],
-    },
+
     lastName: {
       type: String,
-      required: false,
+      required: [true, "Last name is required"],
       trim: true,
-      maxLength: [50, "Last name must be 50 characters"],
+      maxlength: [50, "Last name must be less than 50 characters"],
     },
-    image: [FileSchema],
-    contributionRole: {
+
+    googleScholars: {
       type: String,
-      required: false,
+      required: [true, "Google Scholars is required"],
+      trim: true,
     },
-    degreeOfContribution: {
+
+    email: {
       type: String,
-      required: false,
-    },
-    authorEmail: {
-      type: String,
-      required: [true, "Primary Email is required"],
+      required: [true, "Email is required"],
       trim: true,
       unique: true,
       sparse: true,
       validate: {
-        validator: function (email) {
-          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/gm.test(
-            email
-          );
-        },
+        validator: (email) =>
+          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email),
         message: "Please enter a valid email address",
       },
     },
-    institutionNumber: {
-      type: String,
-      required: false,
-      trim: true,
+
+    authorContribution: {
+      type: [authorContributionSchema],
+      validate: [
+        (val) => val.length > 0,
+        "At least one author contribution is required",
+      ],
     },
 
     institution: {
@@ -62,58 +73,48 @@ const authorSchema = new Schema(
       trim: true,
     },
 
-    institutionTitle: {
+    department: {
       type: String,
-      required: false,
-      trim: true,
-    },
-    institutionDepartment: {
-      type: String,
-      required: false,
+      required: true,
       trim: true,
     },
 
-    primaryAddress: {
+    country: {
       type: String,
-      required: [true, "Primary Address is required"],
+      required: true,
+      trim: true,
     },
-    secondaryAddress: {
+
+    city: {
       type: String,
-      required: false,
+      required: true,
+      trim: true,
     },
-    primaryAddressCountry: {
+
+    zipCode: {
       type: String,
-      required: [true, "Primary address country is required"],
+      required: true,
+      trim: true,
     },
-    primaryAddressSuite: {
+
+    phoneNumber: {
       type: String,
-      required: false,
+      required: true,
+      trim: true,
     },
-    primaryAddressState: {
-      type: String,
-      required: false,
-    },
-    primaryAddressCity: {
-      type: String,
-      required: [true, "Primary address city is required"],
-    },
-    primaryAddressPostalCode: {
-      type: String,
-      required: [true, "Primary address postal code is required"],
-    },
-    primaryAddressPhone: {
-      type: String,
-      required: false,
-    },
+
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
+// Create and export the model
 const Author = model("Author", authorSchema);
-
 module.exports = Author;
