@@ -59,4 +59,75 @@ const fetchAuthorProvider = async (req, res) => {
   }
 };
 
-module.exports = { createAuthorProvider, fetchAuthorProvider };
+const updateAuthorProvider = async (req, res) => {
+  const authorId = req.params.id;
+  const validatedData = matchedData(req, { locations: ["body"] });
+
+  // Manually parse JSON fields if necessary
+  if (
+    validatedData.authorContribution &&
+    typeof validatedData.authorContribution === "string"
+  ) {
+    try {
+      validatedData.authorContribution = JSON.parse(
+        validatedData.authorContribution
+      );
+    } catch (err) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Invalid JSON in authorContribution",
+      });
+    }
+  }
+
+  try {
+    const author = await Author.findById(authorId);
+
+    if (!author) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: "Author not found",
+      });
+    }
+
+    Object.assign(author, validatedData);
+
+    await author.save();
+
+    return res.status(StatusCodes.OK).json(author);
+  } catch (error) {
+    errorLogger(`Error updating author: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to update author",
+    });
+  }
+};
+
+const deleteAuthorProvider = async (req, res) => {
+  const authorId = req.params.id;
+
+  try {
+    const deleted = await Author.findByIdAndDelete(authorId);
+
+    if (!deleted) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: "Author not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      message: "Author deleted successfully",
+      author: deleted,
+    });
+  } catch (error) {
+    errorLogger(`Error deleting author: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to delete author",
+    });
+  }
+};
+
+module.exports = {
+  createAuthorProvider,
+  fetchAuthorProvider,
+  updateAuthorProvider,
+  deleteAuthorProvider,
+};

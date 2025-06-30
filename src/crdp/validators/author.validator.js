@@ -121,4 +121,90 @@ const createAuthorValidator = [
     .trim(),
 ];
 
-module.exports = { createAuthorValidator };
+const updateAuthorValidator = [
+  // Prefix
+  body("prefix")
+    .optional()
+    .isString()
+    .withMessage("Prefix must be a string")
+    .trim(),
+  // First Name
+  body("firstName")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("First name must be less than 100 characters")
+    .isString()
+    .withMessage("First name must be a string")
+    .trim(),
+  // Last Name
+  body("lastName")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("Last name must be less than 100 characters")
+    .isString()
+    .withMessage("Last name must be a string")
+    .trim(),
+  // Email
+  body("email")
+    .optional()
+    .isEmail()
+    .withMessage("Must be a valid email")
+    .isLength({ max: 200 })
+    .withMessage("Email must be under 200 characters")
+    .trim()
+    .custom(async (email, { req }) => {
+      const existingAuthor = await Author.findOne({ email });
+      if (existingAuthor && existingAuthor._id.toString() !== req.params.id) {
+        throw new Error("An author with this email already exists");
+      }
+      return true;
+    }),
+  // Google Scholars
+  body("googleScholars").optional().isString().trim(),
+  // Contributions: ensure valid JSON & structure
+  body("authorContribution")
+    .optional()
+    .custom((value) => {
+      if (!value) return true; // Skip validation if not provided
+      let parsed;
+      try {
+        parsed = typeof value === "string" ? JSON.parse(value) : value;
+      } catch {
+        throw new Error("Invalid authorContribution JSON format");
+      }
+
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error("At least one Author Contribution is required");
+      }
+
+      for (const item of parsed) {
+        if (
+          !item.contributionRule ||
+          typeof item.contributionRule !== "string"
+        ) {
+          throw new Error(
+            "Each contribution must have a valid contributionRule"
+          );
+        }
+        if (
+          !item.degreeOfContribution ||
+          typeof item.degreeOfContribution !== "string"
+        ) {
+          throw new Error(
+            "Each contribution must have a valid degreeOfContribution"
+          );
+        }
+      }
+
+      return true;
+    }),
+  // Institution & Address Info
+  body("institution").optional().isString().trim(),
+  body("department").optional().isString().trim(),
+  body("country").optional().isString().trim(),
+  body("city").optional().isString().trim(),
+  body("zipCode").optional().isString().trim(),
+  body("phoneNumber").optional().isString().trim(),
+];
+
+module.exports = { createAuthorValidator, updateAuthorValidator };
