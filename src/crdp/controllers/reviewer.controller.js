@@ -1,7 +1,21 @@
-const { createReviewerProvider } = require("../providers/reviewer.provider");
+const {
+  createReviewerProvider,
+  fetchReviewerProvider,
+} = require("../providers/reviewer.provider");
 
 const handleCreateReviewer = async (req, res) => {
   return await createReviewerProvider(req, res);
 };
 
-module.exports = { handleCreateReviewer };
+const handleGetReviewers = async (req, res) => {
+  return await fetchReviewerProvider(req, res);
+};
+
+// const handleUpdateReviewer = async (req, res) => {
+//   return await updateReviewerProvider(req, res);
+// };
+// const handleDeleteReviewer = async (req, res) => {
+//   return await deleteReviewerProvider(req, res);
+// };
+
+module.exports = { handleCreateReviewer, handleGetReviewers };

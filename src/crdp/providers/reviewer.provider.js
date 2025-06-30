@@ -1,54 +1,120 @@
 const { matchedData } = require("express-validator");
-const Reviewer = require("../schema/reviewer.schema");
 const { StatusCodes } = require("http-status-codes");
 const errorLogger = require("../helpers/errorLogger.helper");
+const Reviewer = require("../schema/reviewer.schema");
 
 const createReviewerProvider = async (req, res) => {
-  const validatedData = matchedData(req);
+  const validatedData = matchedData(req, { locations: ["body"] });
+
   try {
-    const existingReviewer = await Reviewer.findOne({
-      reviewerEmail: validatedData.reviewerEmail,
+    // Check if the email already exists
+    const existingAuthor = await Reviewer.findOne({
+      email: validatedData.email,
     });
 
-    if (existingReviewer) {
+    if (existingAuthor) {
       return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "A reviewer with this email already exists",
+        message: "An Reviewer with this email already exists",
       });
     }
+
     const reviewer = new Reviewer({
-      firstName: validatedData.firstName,
-      lastName: validatedData.lastName,
-      reviewerEmail: validatedData.reviewerEmail,
-
-      institution: validatedData.institution,
-      department: validatedData.department,
-
-      preference: validatedData.preference,
-      phoneNumber: validatedData.phoneNumber,
-      user: req.user.sub,
+      ...validatedData,
+      user: req.user?.sub, // assuming authenticateToken sets req.user
     });
 
     await reviewer.save();
 
-    return res.status(StatusCodes.OK).json({
-      _id: reviewer._id,
-      firstName: reviewer.firstName,
-      lastName: reviewer.lastName,
-      reviewerEmail: reviewer.reviewerEmail,
-
-      institution: reviewer.institution,
-      department: reviewer.department,
-
-      preference: reviewer.preference,
-      phoneNumber: reviewer.phoneNumber,
-    });
+    return res.status(StatusCodes.CREATED).json(reviewer);
   } catch (error) {
-    errorLogger(`Error creating a new reviewer: ${error.message}`, req, error);
-    return res.status(StatusCodes.GATEWAY_TIMEOUT).json({
-      reason:
-        "Unable to process your request at this moment, please try again later",
+    errorLogger(`Error creating reviewer: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
 
-module.exports = { createReviewerProvider };
+const fetchReviewerProvider = async (req, res) => {
+  try {
+    const reviewers = await Reviewer.find({ user: req.user.sub }); // Filter by authenticated user
+    return res.status(StatusCodes.OK).json(reviewers);
+  } catch (error) {
+    errorLogger(`Error fetching reviewers: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to fetch reviewers",
+    });
+  }
+};
+
+const updateReviewerProvider = async (req, res) => {
+  const authorId = req.params.id;
+  const validatedData = matchedData(req, { locations: ["body"] });
+
+  // Manually parse JSON fields if necessary
+  if (
+    validatedData.authorContribution &&
+    typeof validatedData.authorContribution === "string"
+  ) {
+    try {
+      validatedData.authorContribution = JSON.parse(
+        validatedData.authorContribution
+      );
+    } catch (err) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Invalid JSON in authorContribution",
+      });
+    }
+  }
+
+  try {
+    const author = await Author.findById(authorId);
+
+    if (!author) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: "Author not found",
+      });
+    }
+
+    Object.assign(author, validatedData);
+
+    await author.save();
+
+    return res.status(StatusCodes.OK).json(author);
+  } catch (error) {
+    errorLogger(`Error updating author: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to update author",
+    });
+  }
+};
+
+const deleteReviewerProvider = async (req, res) => {
+  const authorId = req.params.id;
+
+  try {
+    const deleted = await Author.findByIdAndDelete(authorId);
+
+    if (!deleted) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: "Author not found",
+      });
+    }
+
+    return res.status(StatusCodes.OK).json({
+      message: "Author deleted successfully",
+      author: deleted,
+    });
+  } catch (error) {
+    errorLogger(`Error deleting author: ${error.message}`, req, error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Failed to delete author",
+    });
+  }
+};
+
+module.exports = {
+  createReviewerProvider,
+  fetchReviewerProvider,
+  updateReviewerProvider,
+  deleteReviewerProvider,
+};
