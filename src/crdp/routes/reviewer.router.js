@@ -5,11 +5,13 @@ const { validationResult } = require("express-validator");
 const authenticateToken = require("../middleware/authenticateToken.middleware");
 const {
   createReviewerValidator,
-  // updateReviewerValidator,
+  updateReviewerValidator,
 } = require("../validators/reviewer.validator");
 const {
   handleCreateReviewer,
   handleGetReviewers,
+  handleUpdateReviewer,
+  handleDeleteReviewer,
 } = require("../controllers/reviewer.controller");
 
 const reviewerRouter = express.Router();
@@ -38,21 +40,25 @@ reviewerRouter.get("/api/reviewers", authenticateToken, (req, res) => {
   }
 });
 
-// reviewerRouter.put(
-//   "/api/reviewer/update/:id",
-//   authenticateToken,
-//   upload.none(), // ← MUST be here
-//   ...updateReviewerValidator,
-//   (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty())
-//       return res.status(400).json({ errors: errors.array() });
-//     handleUpdateAuthor(req, res);
-//   }
-// );
+reviewerRouter.put(
+  "/api/reviewer/update/:id",
+  authenticateToken,
+  upload.none(), // ← MUST be here
+  ...updateReviewerValidator,
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    handleUpdateReviewer(req, res);
+  }
+);
 
-// reviewerRouter.delete("/api/reviewer/delete/:id", authenticateToken, (req, res) => {
-//   handleDeleteAuthor(req, res);
-// });
+reviewerRouter.delete(
+  "/api/reviewer/delete/:id",
+  authenticateToken,
+  (req, res) => {
+    handleDeleteReviewer(req, res);
+  }
+);
 
 module.exports = reviewerRouter;
